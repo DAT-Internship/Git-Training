@@ -1,0 +1,42 @@
+# Maven build output (including the deployable WAR in target/)
+target/
+
+# Maven Wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Spring Tool Suite / Eclipse
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Visual Studio Code
+.vscode/
+
+# Java crash dumps and logs
+hs_err_pid*
+replay_pid*
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Spring Initializr helper file
+HELP.md
