@@ -15,5 +15,11 @@ class GitTrainingApplicationTests {
 	void contextLoad() {
 		System.out.println("hello testing2");
 	}
+	
+	@Test
+	void contextLoad1() {
+		System.out.println("hello testing1");
+	}
+
 
 }
