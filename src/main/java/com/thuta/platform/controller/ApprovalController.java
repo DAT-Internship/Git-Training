@@ -7,4 +7,9 @@ public class ApprovalController {
 	public String approval() {
 		return "about";
 	}
+	
+	@GetMapping("/about")
+	public String renewapproval() {
+		return "about";
+	}
 }
