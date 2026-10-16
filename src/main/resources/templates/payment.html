@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Payment</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        #payment-form { width: 400px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        button { background-color: #5469d4; color: #fff; border: 0; padding: 12px 16px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 15px; }
+        #error-message { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="payment-form">
+    <h2>Complete Payment</h2>
+    <p>Total: $20.00</p>
+    
+    <form id="payment-form-element">
+        <div id="payment-element">
+            <!-- Stripe Payment Element injected here -->
+        </div>
+        <button id="submit">
+            <span id="button-text">Pay Now</span>
+        </button>
+        <div id="error-message"></div>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    // Retrieve key passed from Spring Boot controller via Thymeleaf inline JS
+    const stripeKey = /*[[${stripePublishableKey}]]*/ 'pk_test_dummy';
+    const stripe = Stripe(stripeKey);
+
+    let elements;
+
+    initialize();
+
+    async function initialize() {
+        // Fetch PaymentIntent client secret from backend
+        const response = await fetch("/create-payment-intent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" }
+        });
+        const { clientSecret } = await response.json();
+
+        // Mount Stripe Elements
+        elements = stripe.elements({ clientSecret });
+        const paymentElement = elements.create("payment");
+        paymentElement.mount("#payment-element");
+    }
+
+    document.querySelector("#payment-form-element").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                return_url: window.location.origin + "/payment-success",
+            },
+        });
+
+        if (error) {
+            document.querySelector("#error-message").textContent = error.message;
+        }
+    });
+</script>
+
+</body>
+</html>
