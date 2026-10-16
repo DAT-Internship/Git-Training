@@ -12,4 +12,10 @@ public class ApprovalController {
 	public String renewapproval() {
 		return "about";
 	}
+	
+	
+	@GetMapping("/about")
+	public String renew_approval() {
+		return "about";
+	}
 }
