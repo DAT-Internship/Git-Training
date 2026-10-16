@@ -8,6 +8,7 @@ class GitTrainingApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("hello testing");
 	}
 
 }
