@@ -2,6 +2,4 @@ package com.dat.cms;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
-public class DatCmsApplication {
- public static void main(String[] args) { SpringApplication.run(DatCmsApplication.class, args); }
-}
+public class CmsApplication { public static void main(String[] args) { SpringApplication.run(CmsApplication.class,args); } }
