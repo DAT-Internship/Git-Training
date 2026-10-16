@@ -12,4 +12,10 @@ public class PaymentController {
 		return "payment";
 	}
 	
+	
+	@GetMapping("/status")
+	public String status() {
+		return "payment";
+	}
+	
 }
