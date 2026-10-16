@@ -10,4 +10,8 @@ class GitTrainingApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void contextLoader() {
+		System.out.println("hello testing3");
+	}
 }
