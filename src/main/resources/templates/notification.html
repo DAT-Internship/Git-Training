@@ -1,0 +1,135 @@
+```html
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Notifications</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: #007bff;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+        }
+
+        .notification {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 6px;
+        }
+
+        .unread {
+            background: #eef6ff;
+            border-left: 4px solid #007bff;
+        }
+
+        .read {
+            background: #f9f9f9;
+        }
+
+        .time {
+            color: #777;
+            font-size: 13px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .success {
+            color: green;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>Notifications</h1>
+
+        <span class="badge">
+            Unread:
+            <span th:text="${unreadCount}">0</span>
+        </span>
+    </div>
+
+    <p class="success"
+       th:if="${successMessage}"
+       th:text="${successMessage}">
+    </p>
+
+    <div th:if="${#lists.isEmpty(notifications)}">
+        <p>No notifications available.</p>
+    </div>
+
+    <div th:each="notification : ${notifications}"
+         class="notification"
+         th:classappend="${notification.read} ? ' read' : ' unread'">
+
+        <h3 th:text="${notification.title}">
+            Notification Title
+        </h3>
+
+        <p th:text="${notification.message}">
+            Notification message
+        </p>
+
+        <p class="time"
+           th:text="${#temporals.format(notification.createdAt,
+                        'dd-MM-yyyy HH:mm')}">
+            Date and time
+        </p>
+
+        <p th:if="${notification.read}">
+            Status: Read
+        </p>
+
+        <form th:unless="${notification.read}"
+              th:action="@{/notifications/read/{id}(id=${notification.id})}"
+              method="post">
+
+            <button type="submit">Mark as Read</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>
+```
