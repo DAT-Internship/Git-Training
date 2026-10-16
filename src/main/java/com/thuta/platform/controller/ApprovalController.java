@@ -7,4 +7,5 @@ public class ApprovalController {
 	public String approval() {
 		return "about";
 	}
+	
 }
