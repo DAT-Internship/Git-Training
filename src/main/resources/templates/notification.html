@@ -1,135 +1,191 @@
-```html
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Notifications</title>
-
+    <title>Notification Center | DAT CMS</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f9;
-            margin: 0;
-            padding: 30px;
+        :root {
+            --navy: #163a63;
+            --blue: #2463eb;
+            --blue-light: #eaf2ff;
+            --page: #f4f7fb;
+            --line: #dce4ef;
+            --text: #243247;
+            --muted: #66758a;
+            --green: #15803d;
+            --red: #b91c1c;
+            --amber: #92400e;
         }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .badge {
-            background: #007bff;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 15px;
-        }
-
-        .notification {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 6px;
-        }
-
-        .unread {
-            background: #eef6ff;
-            border-left: 4px solid #007bff;
-        }
-
-        .read {
-            background: #f9f9f9;
-        }
-
-        .time {
-            color: #777;
-            font-size: 13px;
-        }
-
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .success {
-            color: green;
-            margin-top: 15px;
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--page); color: var(--text); font-family: Arial, Helvetica, sans-serif; }
+        header { background: var(--navy); color: white; padding: 23px max(4%, calc((100% - 1180px) / 2)); }
+        header h1 { margin: 0 0 7px; font-size: 25px; }
+        header p { margin: 0; color: #d7e6fa; font-size: 14px; }
+        main { max-width: 1180px; width: 92%; margin: 25px auto 48px; }
+        .message { border-radius: 8px; padding: 12px 15px; margin-bottom: 16px; }
+        .success-message { background: #dcfce7; border: 1px solid #bbf7d0; color: #166534; }
+        .error-message { background: #fee2e2; border: 1px solid #fecaca; color: #991b1b; }
+        .panel { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-bottom: 20px; box-shadow: 0 3px 12px rgba(20, 45, 80, .035); }
+        .panel-heading { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+        h2 { color: var(--navy); font-size: 19px; margin: 0 0 8px; }
+        .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; margin: 20px 0 0; }
+        .stat { border: 1px solid var(--line); border-radius: 9px; padding: 15px; background: #fbfdff; }
+        .stat strong { display: block; color: var(--navy); font-size: 25px; margin-bottom: 4px; }
+        .stat span { color: var(--muted); font-size: 12px; }
+        .btn { border: 0; display: inline-flex; justify-content: center; align-items: center; gap: 7px; border-radius: 7px; padding: 10px 14px; background: var(--blue); color: white; cursor: pointer; font-weight: 700; font-size: 13px; text-decoration: none; white-space: nowrap; }
+        .btn:hover { filter: brightness(.95); }
+        .btn:disabled { cursor: not-allowed; opacity: .45; }
+        .btn-secondary { background: #e9eff7; color: var(--navy); }
+        .btn-outline { background: white; border: 1px solid var(--line); color: var(--navy); }
+        .btn-small { padding: 7px 10px; font-size: 12px; }
+        .category-nav { display: flex; flex-wrap: wrap; gap: 8px; margin: 19px 0 3px; }
+        .category-link { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 9px 13px; color: #42536a; background: white; text-decoration: none; font-size: 13px; font-weight: 700; }
+        .category-link:hover { border-color: #9dbaf6; }
+        .category-link.active { background: var(--blue-light); border-color: #9dbaf6; color: #1d4ed8; }
+        .count { min-width: 21px; text-align: center; border-radius: 999px; padding: 3px 6px; background: #e9eef5; color: #475569; font-size: 11px; }
+        .category-link.active .count { background: #cfe0ff; color: #1d4ed8; }
+        .notification-list { display: flex; flex-direction: column; }
+        .notification { display: grid; grid-template-columns: 42px minmax(0, 1fr) auto; align-items: start; gap: 13px; padding: 17px 0; border-bottom: 1px solid #edf1f6; }
+        .notification:last-child { border-bottom: 0; }
+        .notification.unread { background: #fbfdff; }
+        .icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 10px; background: #eaf2ff; color: #1d4ed8; font-size: 17px; font-weight: 700; }
+        .icon.warning { background: #fef3c7; color: var(--amber); }
+        .icon.error { background: #fee2e2; color: var(--red); }
+        .icon.success { background: #dcfce7; color: var(--green); }
+        .notification-title-row { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; margin-bottom: 6px; }
+        .notification-title { color: #1f2f45; font-size: 15px; font-weight: 700; }
+        .notification-message { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0 0 9px; line-height: 1.5; color: #4b5c72; font-size: 13px; }
+        .notification-meta { display: flex; flex-wrap: wrap; gap: 7px 14px; color: var(--muted); font-size: 11px; }
+        .badge { display: inline-block; border-radius: 999px; padding: 4px 8px; font-size: 10px; line-height: 1.2; font-weight: 800; letter-spacing: .03em; background: #e9eef5; color: #475569; }
+        .badge-info { background: #e0edff; color: #1d4ed8; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .badge-error { background: #fee2e2; color: #991b1b; }
+        .badge-read { background: #edf1f5; color: #64748b; }
+        .badge-unread { background: #dbeafe; color: #1d4ed8; }
+        .dot { width: 7px; height: 7px; display: inline-block; border-radius: 50%; background: #2563eb; }
+        .notification-action { align-self: center; }
+        .empty { padding: 38px 15px; text-align: center; color: var(--muted); }
+        .empty strong { display: block; color: var(--navy); margin-bottom: 7px; }
+        .section-note { margin: 0 0 17px; }
+        .toolbar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+        @media (max-width: 700px) {
+            .stats { grid-template-columns: 1fr; }
+            .notification { grid-template-columns: 36px minmax(0, 1fr); gap: 10px; }
+            .icon { width: 35px; height: 35px; }
+            .notification-action { grid-column: 2; justify-self: start; }
+            .panel { padding: 16px; }
         }
     </style>
 </head>
-
 <body>
+<header>
+    <h1>DAT CMS — Notification Center</h1>
+    <p>All notifications loaded from MySQL. Filter by category and manage read status.</p>
+</header>
 
-<div class="container">
+<main>
+    <div class="message success-message" th:if="${successMessage}" th:text="${successMessage}"></div>
 
-    <div class="header">
-        <h1>Notifications</h1>
+    <section class="panel">
+        <div class="panel-heading">
+            <div>
+                <h2>Notifications</h2>
+                <p class="muted">The list includes all recipients stored in the database, newest first.</p>
+            </div>
+            <form method="post" th:action="@{/notifications/read-all}">
+                <input type="hidden" name="category" th:value="${category}">
+                <button class="btn" type="submit" th:disabled="${unreadCount == 0}"
+                        onclick="return confirm('Mark every unread notification in the database as read?')">
+                    ✓ Mark all as read
+                </button>
+            </form>
+        </div>
 
-        <span class="badge">
-            Unread:
-            <span th:text="${unreadCount}">0</span>
-        </span>
-    </div>
+        <div class="stats">
+            <div class="stat"><strong th:text="${allCount}">0</strong><span>All notifications</span></div>
+            <div class="stat"><strong th:text="${unreadCount}">0</strong><span>Unread notifications</span></div>
+            <div class="stat"><strong th:text="${notifications.size()}">0</strong><span>Currently displayed</span></div>
+        </div>
 
-    <p class="success"
-       th:if="${successMessage}"
-       th:text="${successMessage}">
-    </p>
+        <nav class="category-nav" aria-label="Filter notifications by category">
+            <a class="category-link" th:classappend="${category == 'ALL'} ? ' active' : ''" th:href="@{/notifications(category='ALL')}">
+                All <span class="count" th:text="${allCount}">0</span>
+            </a>
+            <a class="category-link" th:classappend="${category == 'UNREAD'} ? ' active' : ''" th:href="@{/notifications(category='UNREAD')}">
+                Unread <span class="count" th:text="${unreadCount}">0</span>
+            </a>
+            <a class="category-link" th:classappend="${category == 'INFO'} ? ' active' : ''" th:href="@{/notifications(category='INFO')}">
+                Info <span class="count" th:text="${infoCount}">0</span>
+            </a>
+            <a class="category-link" th:classappend="${category == 'SUCCESS'} ? ' active' : ''" th:href="@{/notifications(category='SUCCESS')}">
+                Success <span class="count" th:text="${successCount}">0</span>
+            </a>
+            <a class="category-link" th:classappend="${category == 'WARNING'} ? ' active' : ''" th:href="@{/notifications(category='WARNING')}">
+                Warning <span class="count" th:text="${warningCount}">0</span>
+            </a>
+            <a class="category-link" th:classappend="${category == 'ERROR'} ? ' active' : ''" th:href="@{/notifications(category='ERROR')}">
+                Error <span class="count" th:text="${errorCount}">0</span>
+            </a>
+        </nav>
+    </section>
 
-    <div th:if="${#lists.isEmpty(notifications)}">
-        <p>No notifications available.</p>
-    </div>
+    <section class="panel">
+        <div class="toolbar">
+            <div>
+                <h2 th:if="${category == 'ALL'}">All notifications</h2>
+                <h2 th:if="${category == 'UNREAD'}">Unread notifications</h2>
+                <h2 th:if="${category != 'ALL' and category != 'UNREAD'}" th:text="${category + ' notifications'}">INFO notifications</h2>
+                <p class="muted section-note">Select a category above to narrow the list. Marking all read updates every unread record in MySQL.</p>
+            </div>
+            <a class="btn btn-outline" th:href="@{/notifications(category='ALL')}">Refresh list</a>
+        </div>
 
-    <div th:each="notification : ${notifications}"
-         class="notification"
-         th:classappend="${notification.read} ? ' read' : ' unread'">
+        <div class="notification-list" th:if="${!notifications.isEmpty()}">
+            <article class="notification" th:each="notification : ${notifications}"
+                     th:classappend="${!notification.read} ? ' unread' : ''">
+                <div class="icon"
+                     th:classappend="${notification.type == 'WARNING'} ? ' warning' : (${notification.type == 'ERROR'} ? ' error' : (${notification.type == 'SUCCESS'} ? ' success' : ''))"
+                     th:text="${notification.type == 'WARNING' ? '!' : (notification.type == 'ERROR' ? '×' : (notification.type == 'SUCCESS' ? '✓' : 'i'))}">i</div>
 
-        <h3 th:text="${notification.title}">
-            Notification Title
-        </h3>
+                <div>
+                    <div class="notification-title-row">
+                        <span class="notification-title" th:text="${notification.title}">Notification title</span>
+                        <span class="dot" th:if="${!notification.read}" title="Unread"></span>
+                        <span class="badge"
+                              th:classappend="${notification.type == 'WARNING'} ? ' badge-warning' : (${notification.type == 'ERROR'} ? ' badge-error' : (${notification.type == 'SUCCESS'} ? ' badge-success' : ' badge-info'))"
+                              th:text="${notification.type}">INFO</span>
+                        <span class="badge badge-unread" th:if="${!notification.read}">UNREAD</span>
+                        <span class="badge badge-read" th:if="${notification.read}">READ</span>
+                    </div>
+                    <p class="notification-message" th:text="${notification.message}">Notification details go here.</p>
+                    <div class="notification-meta">
+                        <span><strong>To:</strong> <span th:text="${notification.recipientEmail}">user@example.com</span></span>
+                        <span><strong>Created:</strong> <time th:text="${notification.createdAt}">2026-10-16T10:00</time></span>
+                        <span><strong>ID:</strong> <span th:text="${notification.id}">1</span></span>
+                    </div>
+                </div>
 
-        <p th:text="${notification.message}">
-            Notification message
-        </p>
+                <div class="notification-action">
+                    <form method="post" class="inline-form"
+                          th:if="${!notification.read}"
+                          th:action="@{/notifications/{id}/read(id=${notification.id})}">
+                        <input type="hidden" name="category" th:value="${category}">
+                        <button class="btn btn-secondary btn-small" type="submit">Mark as read</button>
+                    </form>
+                    <span class="muted" th:if="${notification.read}">Completed</span>
+                </div>
+            </article>
+        </div>
+        <div class="empty" th:if="${notifications.isEmpty()}">
+            <strong th:text="${category == 'UNREAD' ? 'You are all caught up' : 'No notifications in this category'}">No notifications</strong>
+            <span th:text="${category == 'UNREAD' ? 'There are no unread notifications.' : 'Choose another category to view more notifications.'}">Choose another category to view more notifications.</span>
+        </div>
+    </section>
 
-        <p class="time"
-           th:text="${#temporals.format(notification.createdAt,
-                        'dd-MM-yyyy HH:mm')}">
-            Date and time
-        </p>
-
-        <p th:if="${notification.read}">
-            Status: Read
-        </p>
-
-        <form th:unless="${notification.read}"
-              th:action="@{/notifications/read/{id}(id=${notification.id})}"
-              method="post">
-
-            <button type="submit">Mark as Read</button>
-
-        </form>
-
-    </div>
-
-</div>
-
+   <!--  <p class="muted">DAT CMS · Notification records are loaded from MySQL through Spring Data JPA and rendered with Thymeleaf.</p> -->
+</main>
 </body>
 </html>
-```
