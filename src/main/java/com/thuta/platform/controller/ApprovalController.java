@@ -1,0 +1,21 @@
+package com.thuta.platform.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+
+public class ApprovalController {
+	@GetMapping("/about")
+	public String approval() {
+		return "about";
+	}
+	
+	@GetMapping("/about")
+	public String renewapproval() {
+		return "about";
+	}
+	
+	
+	@GetMapping("/about")
+	public String renew_approval() {
+		return "about";
+	}
+}
