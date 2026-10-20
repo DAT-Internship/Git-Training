@@ -168,15 +168,7 @@
                     </div>
                 </div>
 
-                <div class="notification-action">
-                    <form method="post" class="inline-form"
-                          th:if="${!notification.read}"
-                          th:action="@{/notifications/{id}/read(id=${notification.id})}">
-                        <input type="hidden" name="category" th:value="${category}">
-                        <button class="btn btn-secondary btn-small" type="submit">Mark as read</button>
-                    </form>
-                    <span class="muted" th:if="${notification.read}">Completed</span>
-                </div>
+               
             </article>
         </div>
         <div class="empty" th:if="${notifications.isEmpty()}">
