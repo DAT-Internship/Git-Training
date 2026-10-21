@@ -18,4 +18,10 @@ public class PaymentController {
 		return "payment";
 	}
 	
+	@GetMapping("/invoice")
+	public String invoice() {
+		return "invoice";
+	}
+
+	
 }
